@@ -1,0 +1,16 @@
+using UnityEngine;
+using System.Collections.Generic;
+/*
+This Factory is for creating spells, base on their type. The SpawnManager.cs manage wchich type will be spawned,
+base on the weight of spell. The type of spells is Enum defined in SpellType.cs. This Factory has to be
+attached on empty object in scenes and add spells prefab to the list.
+*/
+public class SpellFactory : MonoBehaviour, IFactory
+{
+
+    [SerializeField] private List<GameObject> _spells;
+    public GameObject Create(SpellType type)
+    {
+        return _spells.Find(s => s.GetComponent<SpellBase>().Data.Type == type);
+    }
+}
