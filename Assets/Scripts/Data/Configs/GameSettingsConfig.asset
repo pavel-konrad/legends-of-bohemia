@@ -16,11 +16,7 @@ MonoBehaviour:
   SpawnInterval: 10
   NegativeSpellChance: 0.3
   SpellWeights:
-  - Type: 5
-    Weight: 1
   - Type: 0
-    Weight: 2
+    Weight: 1
   - Type: 1
-    Weight: 3
-  - Type: 2
-    Weight: 4
+    Weight: 2
