@@ -51,6 +51,7 @@ public class GridSystem : MonoBehaviour
     private void OnDrawGizmos()
     {
         if (config == null) return;
+        if (_occupants == null) return; 
         
         Gizmos.color = Color.white;
         
@@ -58,7 +59,16 @@ public class GridSystem : MonoBehaviour
         {
             for (int y = 0; y < config.height; y++)
             {
+                Vector2Int pos = new Vector2Int(x, y);
                 Vector3 center = GridToWorld(new Vector2Int(x, y));
+                if(!IsCellFree(pos))
+                {
+                    Gizmos.color = Color.red;
+                }
+                else
+                {
+                    Gizmos.color = Color.white;
+                }
                 Gizmos.DrawWireCube(center, new Vector3(config.cellSize, 0, config.cellSize));
             }
         }
@@ -142,5 +152,9 @@ public class GridSystem : MonoBehaviour
             }
         }
         return freeCells;
+    }
+    public Vector2Int GetCenter()
+    {
+        return new Vector2Int(config.width / 2, config.height / 2);
     }
 }

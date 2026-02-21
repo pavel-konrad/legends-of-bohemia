@@ -11,9 +11,14 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private SpellFactory _spellFactory;
     [SerializeField] private GridSystem _gridSystem;
     [SerializeField] private GameSettingsConfig _settings;
+    [SerializeField] private PlayerFactory _playerFactory;
+    [SerializeField] private PlayerData _playerData;
 
     public void Start()
     {
+        Vector2Int[] spawnPoints = GetPlayerSpawnPoints();
+        _playerFactory.Create(_playerData, spawnPoints[0]);
+        
         if (!_spellFactory || !_gridSystem || !_settings)
         {
             Debug.LogError("Data from factory, grid or settings is not assigned");
@@ -27,6 +32,18 @@ public class SpawnManager : MonoBehaviour
        
 
     // }
+    public Vector2Int[] GetPlayerSpawnPoints()
+    {
+        Vector2Int center = _gridSystem.GetCenter();
+
+        return new Vector2Int[]
+        {
+            new Vector2Int(center.x -1, center.y),
+            new Vector2Int(center.x + 1, center.y),
+            new Vector2Int(center.x, center.y - 1),
+            new Vector2Int(center.x, center.y + 1),
+        };
+    }
 
     private void SpawnSpell()
     {
