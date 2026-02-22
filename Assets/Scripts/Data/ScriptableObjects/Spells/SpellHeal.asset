@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SpellHeal
   m_EditorClassIdentifier: Assembly-CSharp::SpellData
   Name: Heal
-  Icon: {fileID: 0}
+  Icon: {fileID: 21300000, guid: 9e21ba3e096a21c4baef5d47afed32f6, type: 3}
   Color: {r: 0.2970481, g: 1, b: 0, a: 1}
   Duration: 5
   ChargeTime: 0

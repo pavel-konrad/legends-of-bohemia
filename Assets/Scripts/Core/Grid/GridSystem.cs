@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
-using UnityEngine.InputSystem;
+
 /*
 This is a Grid system base on x and y coordinates. Data with configuration of grid is in scriptable objects
 that is need to assign in inspector. Uses matrix math for coordinate conversion 
@@ -18,66 +18,33 @@ public class GridSystem : MonoBehaviour
     public event Action<Vector2Int, IGridOccupant> OnRegistered;
     public event Action<Vector2Int, IGridOccupant> OnUnregistered;
 
+    public int Width => config.Width;
+    public int Height => config.Height;
+    public float CellSize => config.CellSize;
+
     private void Awake()
     {
         _occupants = new Dictionary<Vector2Int, IGridOccupant>();
     }
 
-    private void Update()
-    {
-        if (Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                Vector2Int gridPos = WorldToGrid(hit.point);
-            }
-        }
-    }
-
     public Vector3 GridToWorld(Vector2Int gridPos)
     {
-        return new Vector3(gridPos.x * config.cellSize, 0, gridPos.y * config.cellSize);
+        return new Vector3(gridPos.x * config.CellSize, 0, gridPos.y * config.CellSize);
     }
 
     public Vector2Int WorldToGrid(Vector3 worldPos)
     {
     return new Vector2Int(
-        Mathf.RoundToInt(worldPos.x / config.cellSize),
-        Mathf.RoundToInt(worldPos.z / config.cellSize)
+        Mathf.RoundToInt(worldPos.x / config.CellSize),
+        Mathf.RoundToInt(worldPos.z / config.CellSize)
         );
-    }
-    private void OnDrawGizmos()
-    {
-        if (config == null) return;
-        if (_occupants == null) return; 
-        
-        Gizmos.color = Color.white;
-        
-        for (int x = 0; x < config.width; x++)
-        {
-            for (int y = 0; y < config.height; y++)
-            {
-                Vector2Int pos = new Vector2Int(x, y);
-                Vector3 center = GridToWorld(new Vector2Int(x, y));
-                if(!IsCellFree(pos))
-                {
-                    Gizmos.color = Color.red;
-                }
-                else
-                {
-                    Gizmos.color = Color.white;
-                }
-                Gizmos.DrawWireCube(center, new Vector3(config.cellSize, 0, config.cellSize));
-            }
-        }
     }
 
     public bool IsValid(Vector2Int gridPos)
         {
             return
-            gridPos.x >= 0 && gridPos.x < config.width &&
-            gridPos.y >= 0 && gridPos.y < config.height;
+            gridPos.x >= 0 && gridPos.x < config.Width &&
+            gridPos.y >= 0 && gridPos.y < config.Height;
         }
 
     public bool IsCellFree(Vector2Int gridPos)
@@ -91,24 +58,25 @@ public class GridSystem : MonoBehaviour
         return _occupants[gridPos];
     }
 
-    public void Register(Vector2Int gridPos, IGridOccupant occupant)
+    public bool Register(Vector2Int gridPos, IGridOccupant occupant)
     {
         if (!IsValid(gridPos))
         {
             #if UNITY_EDITOR
             Debug.LogWarning("Position is not in grid");
             #endif
-            return;
+            return false;
         }
         if (!IsCellFree(gridPos))
         {
             #if UNITY_EDITOR
             Debug.Log("Cell is occupied");
             #endif
-            return;
+            return false;
         }
         _occupants.Add(gridPos, occupant);
-        OnRegistered?.Invoke(gridPos, occupant);   
+        OnRegistered?.Invoke(gridPos, occupant);
+        return true;
     }
 
     public void Unregister(Vector2Int gridPos)
@@ -125,35 +93,34 @@ public class GridSystem : MonoBehaviour
         OnUnregistered?.Invoke(gridPos, occupant);
     }
     
-    //Unregisteres from old position and register to new one.
-    public void Move(Vector2Int from, Vector2Int to, IGridOccupant occupant)
+    public bool Move(Vector2Int from, Vector2Int to, IGridOccupant occupant)
     {
         if (!IsValid(to))
         {
             #if UNITY_EDITOR
             Debug.LogWarning("Target possition is not in grid");
             #endif
-            return;
+            return false;
         }
         if (!IsCellFree(to))
         {
             #if UNITY_EDITOR
             Debug.LogWarning("Targeted cell is occupied");
             #endif
-            return;
+            return false;
         }
 
         Unregister(from);
         Register(to, occupant);
-        return;
+        return true;
     }
 
     public List<Vector2Int> GetFreeCells()
     {
         List<Vector2Int> freeCells = new List<Vector2Int>();
-        for (int x = 0; x < config.width; x++)
+        for (int x = 0; x < config.Width; x++)
         {
-            for (int y = 0; y < config.height; y++)
+            for (int y = 0; y < config.Height; y++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
                 if (IsCellFree(pos))
@@ -164,6 +131,6 @@ public class GridSystem : MonoBehaviour
     }
     public Vector2Int GetCenter()
     {
-        return new Vector2Int(config.width / 2, config.height / 2);
+        return new Vector2Int(config.Width / 2, config.Height / 2);
     }
 }

@@ -14,9 +14,20 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private GameSettingsConfig _settings;
     [SerializeField] private PlayerFactory _playerFactory;
     [SerializeField] private PlayerData _playerData;
+    private int _activeSpellCount;
     public event Action<PlayerController> OnPlayerSpawned;
 
-    public void Start()
+    private void Awake()
+    {
+        _gridSystem.OnRegistered   += HandleOccupantRegistered;
+        _gridSystem.OnUnregistered += HandleOccupantUnregistered;
+    }
+    private void OnDestroy()
+    {
+        _gridSystem.OnRegistered   -= HandleOccupantRegistered;
+        _gridSystem.OnUnregistered -= HandleOccupantUnregistered;
+    }
+    private void Start()
     {
   
         
@@ -32,17 +43,23 @@ public class SpawnManager : MonoBehaviour
         
     }
 
-    public void Initialize()
+    private void Initialize()
     {
         SpawnPlayer();
         StartCoroutine(SpawnRoutine());
     }
 
-    // public void Update()
-    // {
-       
+    private void HandleOccupantRegistered(Vector2Int pos, IGridOccupant occupant)
+    {
+        if (occupant is ISpell)
+            _activeSpellCount++;
+    }
 
-    // }
+    private void HandleOccupantUnregistered(Vector2Int pos, IGridOccupant occupant)
+    {
+        if (occupant is ISpell)
+            _activeSpellCount--;
+    }
     public void SpawnPlayer()
     {
         Vector2Int[] spawnPoints = GetPlayerSpawnPoints();
@@ -65,22 +82,36 @@ public class SpawnManager : MonoBehaviour
 
     private void SpawnSpell()
     {
-        List<Vector2Int> freeCells = _gridSystem.GetFreeCells();
+        
+        
+        if (_activeSpellCount >= _settings.MaxActiveSpells) return;
 
+        List<Vector2Int> freeCells = _gridSystem.GetFreeCells();
         if (freeCells.Count == 0) return; 
-        // if (freeCells.Count >= _settings.MaxActiveSpells) return;
 
         Vector2Int randomCell = freeCells[UnityEngine.Random.Range(0, freeCells.Count)];
         Vector3 worldPos = _gridSystem.GridToWorld(randomCell);
     
         SpellType type = GetRandomSpellType();
+        
+        GameObject instance = _spellFactory.Create(type);
+        if (instance == null) return; 
+        instance.transform.position = worldPos;
+        
+        SpellBase spell = instance.GetComponent<SpellBase>();
+        if (spell == null) return;
 
-        GameObject prefab = _spellFactory.Create(type); 
-        GameObject instance = Instantiate(prefab, worldPos, Quaternion.identity);   
+        // spell.OnSpellCollected += HandleSpellCollected;  
+        
 
         IGridOccupant occupant = instance.GetComponent<IGridOccupant>();
-        _gridSystem.Register(randomCell, occupant);
-        
+
+        bool registered = _gridSystem.Register(randomCell, occupant);
+        if (!registered)
+        {
+            Destroy(instance);
+            return;
+        }
       
     }
 

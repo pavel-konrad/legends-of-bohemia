@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IGridOccupant
 {
-    Vector2Int GridPosition {get; set;}
+    Vector2Int GridPosition {get;}
 }

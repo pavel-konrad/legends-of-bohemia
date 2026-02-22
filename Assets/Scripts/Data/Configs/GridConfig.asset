@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84f918cc431c16f44a3539fb3db4dd34, type: 3}
   m_Name: GridConfig
   m_EditorClassIdentifier: Assembly-CSharp::GridConfig
-  width: 10
-  height: 10
-  cellSize: 1
+  <Width>k__BackingField: 10
+  <Height>k__BackingField: 10
+  <CellSize>k__BackingField: 1

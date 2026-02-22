@@ -6,8 +6,8 @@ in SpellBase.cs which contains polymorphic method Cast(), that implement their s
 public interface ISpellTarget
 {
     void Heal(float amount, float duration);
-    void ModifySpeed(float multiplaier, float duration);
+    void ModifySpeed(float multiplier, float duration);
     void TakeDamage(float amount);
-    void ApplyPoision(float damage, float duration);
+    void ApplyPoison(float damage, float duration);
 
 }

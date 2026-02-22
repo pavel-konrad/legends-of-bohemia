@@ -6,15 +6,16 @@ using System.Collections.Generic;
 
 
 
-public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget
+public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget, IMovable, IDemageable
 {
     [SerializeField] private InputActionAsset _inputActions;
-  
     private InputAction _moveAction;
     private bool _isMoving;
     private PlayerData _data;
+    public float MaxHealth => _data.MaxHealth;
+    public float MoveSpeed => _data.MoveSpeed;
     private GridSystem _gridSystem;
-    public Vector2Int GridPosition {get;set;}
+    public Vector2Int GridPosition {get; private set;}
     public event Action<Queue<ISpell>> OnQueueChanged;
     private Queue<ISpell> _spellQueue = new Queue<ISpell>();
     
@@ -33,12 +34,6 @@ public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget
     {
         _moveAction.Disable();
     }
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
         Vector2 input = _moveAction.ReadValue<Vector2>();
@@ -100,8 +95,11 @@ public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget
         }
         
         transform.position = endPos;
-        _gridSystem.Move(GridPosition, targetCell, this);
-        GridPosition = targetCell;
+
+        bool moved = _gridSystem.Move(GridPosition, targetCell, this);
+        if (moved)
+            GridPosition = targetCell;
+        
 
         _isMoving = false;
     }
@@ -113,8 +111,8 @@ public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget
         collectable.OnCollected(this);
         ISpell spell = occupant as ISpell;
         _spellQueue.Enqueue(spell);
-            Debug.Log($"CollectSpell – fronta má {_spellQueue.Count} spellů, OnQueueChanged má {OnQueueChanged?.GetInvocationList().Length ?? 0} odběratelů");
         OnQueueChanged?.Invoke(_spellQueue);
+        spell.Cast(this);
         Destroy((occupant as MonoBehaviour).gameObject);
     }
 
@@ -131,7 +129,7 @@ public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget
     {
         
     }
-    public void ApplyPoision(float damage, float duration)
+    public void ApplyPoison(float damage, float duration)
     {
         
     }

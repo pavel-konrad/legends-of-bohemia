@@ -15,7 +15,12 @@ public abstract class SpellBase : MonoBehaviour, ISpell, ICollectable
     public SpellData Data => _data;
     
     public bool IsCharged { get; private set; }
-    public Vector2Int GridPosition { get; set; }
+    public Vector2Int GridPosition { get; }
+
+    public void Awake()
+    {
+        ApplyColor();
+    }
 
     public void OnCollected(IGridOccupant collector)
     {
@@ -40,4 +45,15 @@ public abstract class SpellBase : MonoBehaviour, ISpell, ICollectable
     }
 
     public abstract void Cast(ISpellTarget target);
+
+    private void ApplyColor()
+    {
+        Renderer renderer = GetComponentInChildren<Renderer>();
+        if (renderer == null) return;
+
+        var block = new MaterialPropertyBlock();
+        renderer.GetPropertyBlock(block);
+        block.SetColor("_BaseColor", _data.Color);
+        renderer.SetPropertyBlock(block);
+    }
 }

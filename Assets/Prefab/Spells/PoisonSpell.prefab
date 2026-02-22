@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 59f69603444579f48ba35971dccb3032, type: 2}
+  - {fileID: 2100000, guid: ddfb3ae3df96ec047ab435ec96c94cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -157,4 +157,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcd1c51eae0c6064183277b450cf188c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HealSpell
-  _data: {fileID: 11400000, guid: b1429c7477db2aa458ca41c35a253b5f, type: 2}
+  _data: {fileID: 11400000, guid: 91aabb92da679ab478b04e3dcb930487, type: 2}
