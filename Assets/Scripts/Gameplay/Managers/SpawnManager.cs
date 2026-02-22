@@ -46,6 +46,7 @@ public class SpawnManager : MonoBehaviour
     private void Initialize()
     {
         SpawnPlayer();
+         Debug.Log($"Spawning player: {_playerData.Name}, HP: {_playerData.MaxHealth}, Energy: {_playerData.MaxEnergy}");
         StartCoroutine(SpawnRoutine());
     }
 

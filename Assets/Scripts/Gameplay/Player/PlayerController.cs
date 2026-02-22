@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 
 
 
@@ -13,16 +14,21 @@ public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget, IMov
     private bool _isMoving;
     private PlayerData _data;
     public float MaxHealth => _data.MaxHealth;
+    public float MaxEnergy => _data.MaxEnergy;
+    public float CurrentHealth { get; private set; }
+    public float CurrentEnergy { get; private set; }
     public float MoveSpeed => _data.MoveSpeed;
     private GridSystem _gridSystem;
+    private SpellController _spellController;
     public Vector2Int GridPosition {get; private set;}
-    public event Action<Queue<ISpell>> OnQueueChanged;
-    private Queue<ISpell> _spellQueue = new Queue<ISpell>();
+    public event Action<float, float>OnHealthChanged;
+    public event Action<float, float> OnEnergyChanged;
     
 
     private void Awake()
     {
         _moveAction = _inputActions.FindActionMap("Player").FindAction("Move");
+        _spellController = GetComponent<SpellController>();
 
     }
     private void OnEnable()
@@ -110,9 +116,7 @@ public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget, IMov
         _gridSystem.Unregister(targetCell);
         collectable.OnCollected(this);
         ISpell spell = occupant as ISpell;
-        _spellQueue.Enqueue(spell);
-        OnQueueChanged?.Invoke(_spellQueue);
-        spell.Cast(this);
+        _spellController.Enqueue(spell);
         Destroy((occupant as MonoBehaviour).gameObject);
     }
 
@@ -135,10 +139,14 @@ public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget, IMov
     }
     public void Initialize(PlayerData data, GridSystem gridSystem, Vector2Int spawnPoint)
     {
+
         _data = data;
+        CurrentHealth = data.MaxHealth;
+        CurrentEnergy = data.MaxEnergy;
         _gridSystem = gridSystem;
         GridPosition = spawnPoint;
         transform.position = _gridSystem.GridToWorld(spawnPoint);
         _gridSystem.Register(spawnPoint, this);
+
     }
 }

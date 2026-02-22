@@ -18,5 +18,6 @@ MonoBehaviour:
   Class: 4
   MoveSpeed: 1
   MaxHealth: 15
+  MaxEnergy: 4
   AttackPower: 15
   IsRanged: 1

@@ -9,6 +9,7 @@ public class PlayerData : ScriptableObject
     public Class Class;
     public float MoveSpeed;
     public float MaxHealth;
+    public float MaxEnergy;
     public float AttackPower;
     public bool IsRanged;
 }

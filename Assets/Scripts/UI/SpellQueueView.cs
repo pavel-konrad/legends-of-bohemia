@@ -20,4 +20,9 @@ public class SpellQueueView : MonoBehaviour
             index++;
         }
     }
+    public void UpdateActiveTimer(float seconds, Color color)
+    {
+        if (_slots.Count > 0)
+            _slots[0].UpdateTimer(seconds, color);
+    }
 }
