@@ -1,6 +1,6 @@
 using UnityEngine;
 public interface ICollectable
 {
-    void OnCollectable(IGridOccupant collector);
+    void OnCollected(IGridOccupant collector);
 
 }

@@ -1,23 +1,28 @@
-
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System.Collections.Generic;
 
 
 
 public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget
 {
     [SerializeField] private InputActionAsset _inputActions;
+  
     private InputAction _moveAction;
     private bool _isMoving;
     private PlayerData _data;
     private GridSystem _gridSystem;
     public Vector2Int GridPosition {get;set;}
+    public event Action<Queue<ISpell>> OnQueueChanged;
+    private Queue<ISpell> _spellQueue = new Queue<ISpell>();
     
 
     private void Awake()
     {
         _moveAction = _inputActions.FindActionMap("Player").FindAction("Move");
+
     }
     private void OnEnable()
     {
@@ -55,7 +60,20 @@ public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget
         Vector2Int targetCell = GridPosition + direction;
 
         if (!_gridSystem.IsValid(targetCell)) return;
-        if (!_gridSystem.IsCellFree(targetCell)) return;
+        if (!_gridSystem.IsCellFree(targetCell)) 
+        {
+            IGridOccupant occupant = _gridSystem.GetOccupant(targetCell);
+            if (occupant is ICollectable collectable)
+            {
+               CollectSpell(occupant, targetCell); 
+            }
+            else
+            {
+                return;
+            }
+            
+           
+        }
 
         StartCoroutine(MoveRoutine(targetCell));
     }
@@ -86,6 +104,18 @@ public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget
         GridPosition = targetCell;
 
         _isMoving = false;
+    }
+
+    public void CollectSpell(IGridOccupant occupant, Vector2Int targetCell)
+    {
+        ICollectable collectable = occupant as ICollectable;
+        _gridSystem.Unregister(targetCell);
+        collectable.OnCollected(this);
+        ISpell spell = occupant as ISpell;
+        _spellQueue.Enqueue(spell);
+            Debug.Log($"CollectSpell – fronta má {_spellQueue.Count} spellů, OnQueueChanged má {OnQueueChanged?.GetInvocationList().Length ?? 0} odběratelů");
+        OnQueueChanged?.Invoke(_spellQueue);
+        Destroy((occupant as MonoBehaviour).gameObject);
     }
 
     public void Heal(float amount, float duration)

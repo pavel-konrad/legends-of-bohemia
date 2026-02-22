@@ -31,7 +31,6 @@ public class GridSystem : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hit))
             {
                 Vector2Int gridPos = WorldToGrid(hit.point);
-                Debug.Log($"Kliknuto na grid pozici: {gridPos}");
             }
         }
     }
@@ -96,12 +95,16 @@ public class GridSystem : MonoBehaviour
     {
         if (!IsValid(gridPos))
         {
+            #if UNITY_EDITOR
             Debug.LogWarning("Position is not in grid");
+            #endif
             return;
         }
         if (!IsCellFree(gridPos))
         {
+            #if UNITY_EDITOR
             Debug.Log("Cell is occupied");
+            #endif
             return;
         }
         _occupants.Add(gridPos, occupant);
@@ -112,7 +115,9 @@ public class GridSystem : MonoBehaviour
     {
         if (!_occupants.ContainsKey(gridPos))
         {
+            #if UNITY_EDITOR
             Debug.Log("There is nothing.");
+            #endif
             return;
         }
         IGridOccupant occupant = _occupants[gridPos];
@@ -125,12 +130,16 @@ public class GridSystem : MonoBehaviour
     {
         if (!IsValid(to))
         {
+            #if UNITY_EDITOR
             Debug.LogWarning("Target possition is not in grid");
+            #endif
             return;
         }
         if (!IsCellFree(to))
         {
+            #if UNITY_EDITOR
             Debug.LogWarning("Targeted cell is occupied");
+            #endif
             return;
         }
 

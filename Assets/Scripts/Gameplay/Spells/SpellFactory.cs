@@ -11,6 +11,9 @@ public class SpellFactory : MonoBehaviour, IFactory
     [SerializeField] private List<GameObject> _spells;
     public GameObject Create(SpellType type)
     {
-        return _spells.Find(s => s.GetComponent<SpellBase>().Data.Type == type);
+        GameObject prefab = _spells.Find(s => s.GetComponent<SpellBase>().Data.Type == type);
+        if(prefab == null) return null;
+
+        return Instantiate(prefab);
     }
 }

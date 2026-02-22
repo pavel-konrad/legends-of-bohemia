@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 /*
@@ -13,17 +14,27 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private GameSettingsConfig _settings;
     [SerializeField] private PlayerFactory _playerFactory;
     [SerializeField] private PlayerData _playerData;
+    public event Action<PlayerController> OnPlayerSpawned;
 
     public void Start()
     {
-        Vector2Int[] spawnPoints = GetPlayerSpawnPoints();
-        _playerFactory.Create(_playerData, spawnPoints[0]);
+  
         
         if (!_spellFactory || !_gridSystem || !_settings)
         {
+            #if UNITY_EDITOR
             Debug.LogError("Data from factory, grid or settings is not assigned");
+            #endif
             return;
         }
+        Initialize();
+
+        
+    }
+
+    public void Initialize()
+    {
+        SpawnPlayer();
         StartCoroutine(SpawnRoutine());
     }
 
@@ -32,6 +43,13 @@ public class SpawnManager : MonoBehaviour
        
 
     // }
+    public void SpawnPlayer()
+    {
+        Vector2Int[] spawnPoints = GetPlayerSpawnPoints();
+        GameObject playerObj = _playerFactory.Create(_playerData, spawnPoints[0]);
+        PlayerController player = playerObj.GetComponent<PlayerController>();
+        OnPlayerSpawned?.Invoke(player);
+    }
     public Vector2Int[] GetPlayerSpawnPoints()
     {
         Vector2Int center = _gridSystem.GetCenter();
@@ -52,11 +70,11 @@ public class SpawnManager : MonoBehaviour
         if (freeCells.Count == 0) return; 
         // if (freeCells.Count >= _settings.MaxActiveSpells) return;
 
-        Vector2Int randomCell = freeCells[Random.Range(0, freeCells.Count)];
+        Vector2Int randomCell = freeCells[UnityEngine.Random.Range(0, freeCells.Count)];
         Vector3 worldPos = _gridSystem.GridToWorld(randomCell);
     
         SpellType type = GetRandomSpellType();
-        
+
         GameObject prefab = _spellFactory.Create(type); 
         GameObject instance = Instantiate(prefab, worldPos, Quaternion.identity);   
 
