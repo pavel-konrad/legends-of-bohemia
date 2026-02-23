@@ -121,7 +121,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4104683525729478563}
-  - component: {fileID: 9123282351028347489}
+  - component: {fileID: -8320171373686667512}
   m_Layer: 0
   m_Name: PoisonSpell
   m_TagString: Untagged
@@ -145,7 +145,7 @@ Transform:
   - {fileID: 4086543608078655046}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9123282351028347489
+--- !u!114 &-8320171373686667512
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -154,7 +154,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6260165313806663164}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bcd1c51eae0c6064183277b450cf188c, type: 3}
+  m_Script: {fileID: 11500000, guid: 1e8a6b75a37be11429ffcfc777fd8045, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealSpell
+  m_EditorClassIdentifier: Assembly-CSharp::ApplyPoisonSpell
   _data: {fileID: 11400000, guid: 91aabb92da679ab478b04e3dcb930487, type: 2}

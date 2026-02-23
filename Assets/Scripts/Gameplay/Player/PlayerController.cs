@@ -15,9 +15,11 @@ public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget, IMov
     private PlayerData _data;
     public float MaxHealth => _data.MaxHealth;
     public float MaxEnergy => _data.MaxEnergy;
+    public float MoveSpeed => _data.MoveSpeed;
     public float CurrentHealth { get; private set; }
     public float CurrentEnergy { get; private set; }
-    public float MoveSpeed => _data.MoveSpeed;
+    public float CurrentSpeed { get; private set; }
+    
     private GridSystem _gridSystem;
     private SpellController _spellController;
     public Vector2Int GridPosition {get; private set;}
@@ -96,7 +98,7 @@ public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget, IMov
         {
             transform.position = Vector3.Lerp(startPos, endPos, elapsed);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, elapsed);
-            elapsed += Time.deltaTime * _data.MoveSpeed;
+            elapsed += Time.deltaTime * CurrentSpeed;
             yield return null;
         }
         
@@ -122,11 +124,38 @@ public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget, IMov
 
     public void Heal(float amount, float duration)
     {
-        
+
+        StartCoroutine(HealRoutine(amount, duration));
+
+    }
+
+    IEnumerator HealRoutine(float amount, float duration)
+    {
+        float elapsed = 0;
+        while (elapsed < duration)
+        {
+            float delta = amount * (Time.deltaTime / duration);
+            CurrentHealth = Mathf.Min(CurrentHealth + delta, MaxHealth);
+            OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
     }
     public void ModifySpeed(float amount, float duration)
     {
-        
+        StartCoroutine(SpeedRoutine(amount, duration));
+    }
+
+    IEnumerator SpeedRoutine(float amount, float duration)
+    {
+        float elapsed = 0;
+        CurrentSpeed = CurrentSpeed * amount;
+        while(elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+        CurrentSpeed = CurrentSpeed / amount;
     }
 
     public void TakeDamage(float amount)
@@ -135,7 +164,19 @@ public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget, IMov
     }
     public void ApplyPoison(float damage, float duration)
     {
-        
+        StartCoroutine(ApplyPoisonCorountine(damage, duration));
+    }
+    IEnumerator ApplyPoisonCorountine(float damage, float duration)
+    {
+        float elapsed = 0;
+        while(elapsed < duration)
+        {
+            float delta = damage * (Time.deltaTime / duration);
+            CurrentHealth = Mathf.Max(CurrentHealth - delta, 0);
+            OnHealthChanged?.Invoke(CurrentHealth, MaxHealth);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
     }
     public void Initialize(PlayerData data, GridSystem gridSystem, Vector2Int spawnPoint)
     {
@@ -143,6 +184,7 @@ public class PlayerController : MonoBehaviour, IGridOccupant, ISpellTarget, IMov
         _data = data;
         CurrentHealth = data.MaxHealth;
         CurrentEnergy = data.MaxEnergy;
+        CurrentSpeed = data.MoveSpeed;
         _gridSystem = gridSystem;
         GridPosition = spawnPoint;
         transform.position = _gridSystem.GridToWorld(spawnPoint);
