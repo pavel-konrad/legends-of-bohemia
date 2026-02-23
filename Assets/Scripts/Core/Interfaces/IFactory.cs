@@ -1,5 +1,5 @@
 using UnityEngine;
-public interface IFactory
+public interface IFactory<Tkey, Tproduct>
 {
-    GameObject Create(SpellType type);
+    Tproduct Create(Tkey key);
 }

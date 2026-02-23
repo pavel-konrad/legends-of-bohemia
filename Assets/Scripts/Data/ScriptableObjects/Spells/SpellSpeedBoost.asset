@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: SpellSpeedBoost
   m_EditorClassIdentifier: Assembly-CSharp::SpellData
   Name: Speed Boost
-  Icon: {fileID: 0}
-  Color: {r: 0, g: 0, b: 0, a: 0}
-  Duration: 5
+  Icon: {fileID: 21300000, guid: 863ddb19abb867c408ecc15a0813cbae, type: 3}
+  Color: {r: 0.89143467, g: 0, b: 1, a: 1}
+  Duration: 8
   ChargeTime: 0
   Type: 1
-  EffectValue: 5
+  EffectValue: 1.5
