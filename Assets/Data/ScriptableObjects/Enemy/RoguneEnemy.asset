@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 792503bfb91eb4efb9b949ca39d7a849, type: 3}
+  m_Name: RoguneEnemy
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  Name: Babinsky
+  MaxHealth: 10
+  AttackPower: 2
+  MoveSpeed: 3
+  MoveCooldown: 4
+  AttackCooldown: 3
+  DetectionRange: 1
+  AttackRange: 1
+  IsRanged: 0
+  FootstepSounds: []
+  AttackSounds: []
+  DeathSound: {fileID: 0}
+  AmbientSound: {fileID: 0}
+  EnemyPrefab: {fileID: 1741622259448887251, guid: 5386edd9e71234a2ebbf06f36c3d55f6, type: 3}
